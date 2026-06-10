@@ -22,7 +22,7 @@ const defaultData: ResumeData = {
 const defaultSettings: ResumeSettings = {
   fontFamily: 'Inter',
   fontSize: 'medium',
-  colorTheme: 'blue',
+  colorTheme: 'template',
   templateId: 'classic',
 }
 

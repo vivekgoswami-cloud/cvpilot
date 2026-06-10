@@ -1,6 +1,6 @@
 export type FontFamily = 'Inter' | 'Georgia' | 'Roboto' | 'Playfair Display'
 export type FontSize = 'small' | 'medium' | 'large'
-export type ColorTheme = 'blue' | 'green' | 'purple' | 'red' | 'gray' | 'orange'
+export type ColorTheme = 'template' | 'blue' | 'purple' | 'green' | 'red' | 'gray' | 'orange' | 'teal' | 'rose'
 
 export interface PersonalInfo {
   fullName: string

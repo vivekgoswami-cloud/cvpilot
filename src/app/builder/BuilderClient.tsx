@@ -31,13 +31,13 @@ function BuilderInner() {
 
   useEffect(() => {
     const template = searchParams.get('template')
-    if (template) {
-      updateSettings({
-        templateId: template,
-        colorTheme: (colorMap[template] as any) || 'blue',
-      })
-    }
-  }, [searchParams])
+      if (template) {
+        updateSettings({
+          templateId: template,
+          colorTheme: 'template',
+        })
+     }
+ }, [searchParams])
 
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
