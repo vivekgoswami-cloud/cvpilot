@@ -3,18 +3,14 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useResumeStore } from '@/store/resumeStore'
+import { calculateCompleteness } from '@/lib/resumeCompleteness'
+import StepSidebar from '@/components/builder/StepSidebar'
 import PersonalInfoForm from '@/components/editor/PersonalInfoForm'
 import ExperienceForm from '@/components/editor/ExperienceForm'
 import EducationForm from '@/components/editor/EducationForm'
 import SkillsForm from '@/components/editor/SkillsForm'
 import ResumePreview from '@/components/preview/ResumePreview'
-
-const sections = [
-  { id: 'personal', label: 'Personal Info', icon: '👤' },
-  { id: 'experience', label: 'Experience', icon: '💼' },
-  { id: 'education', label: 'Education', icon: '🎓' },
-  { id: 'skills', label: 'Skills', icon: '⚡' },
-]
+import DownloadButton from '@/components/preview/DownloadButton'
 
 const colorMap: Record<string, string> = {
   classic: 'blue', modern: 'purple', minimal: 'gray',
@@ -24,30 +20,31 @@ const colorMap: Record<string, string> = {
 }
 
 function BuilderInner() {
-  const [activeSection, setActiveSection] = useState('personal')
+  const [activeStep, setActiveStep] = useState('personal')
   const [showPreview, setShowPreview] = useState(false)
-  const { settings, updateSettings } = useResumeStore()
+  const { data, settings, updateSettings } = useResumeStore()
   const searchParams = useSearchParams()
+  const completeness = calculateCompleteness(data)
 
   useEffect(() => {
     const template = searchParams.get('template')
-      if (template) {
-        updateSettings({
-          templateId: template,
-          colorTheme: 'template',
-        })
-     }
- }, [searchParams])
+    if (template) {
+      updateSettings({ templateId: template, colorTheme: 'template' })
+    }
+  }, [searchParams])
 
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
 
-      {/* Left Panel */}
+      {/* Step Sidebar */}
+      <StepSidebar activeStep={activeStep} onStepChange={setActiveStep} completeness={completeness} />
+
+      {/* Editor Panel */}
       <div
-        className={`flex flex-col w-full lg:w-[500px] shrink-0 ${showPreview ? 'hidden lg:flex' : 'flex'}`}
+        className={`flex flex-col w-full lg:w-[420px] shrink-0 ${showPreview ? 'hidden lg:flex' : 'flex'}`}
         style={{ borderRight: '1px solid var(--border)', background: 'var(--bg-primary)' }}
       >
-        {/* Toolbar */}
+        {/* Top toolbar */}
         <div className="px-4 py-3 flex items-center gap-2 flex-wrap" style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
           <select
             value={settings.fontFamily}
@@ -72,69 +69,58 @@ function BuilderInner() {
             <option value="large">Large</option>
           </select>
 
-          <div className="flex gap-1.5">
-            {[
-              { id: 'blue', hex: '#2563eb' },
-              { id: 'purple', hex: '#9333ea' },
-              { id: 'green', hex: '#16a34a' },
-              { id: 'red', hex: '#dc2626' },
-              { id: 'gray', hex: '#4b5563' },
-              { id: 'orange', hex: '#ea580c' },
-              { id: 'teal', hex: '#0d9488' },
-              { id: 'rose', hex: '#e11d48' },
-            ].map((color) => (
-              <button
-                key={color.id}
-                onClick={() => updateSettings({ colorTheme: color.id as any })}
-                title={color.id}
-                className="w-5 h-5 rounded-full transition-all hover:scale-110"
-                style={{
-                  backgroundColor: color.hex,
-                  transform: settings.colorTheme === color.id ? 'scale(1.3)' : undefined,
-                  outline: settings.colorTheme === color.id ? `2px solid ${color.hex}` : 'none',
-                  outlineOffset: '2px',
-                }}
-              />
-            ))}
+          <div className="ml-auto flex items-center gap-2">
+            <DownloadButton />
+            <button
+              onClick={() => setShowPreview(true)}
+              className="lg:hidden text-sm px-3 py-1.5 rounded-lg text-white"
+              style={{ background: 'var(--accent)' }}
+            >
+              Preview
+            </button>
           </div>
-
-          <button
-            onClick={() => setShowPreview(true)}
-            className="ml-auto lg:hidden text-sm px-3 py-1.5 rounded-lg text-white"
-            style={{ background: 'var(--accent)' }}
-          >
-            Preview
-          </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex overflow-x-auto" style={{ borderBottom: '1px solid var(--border)' }}>
-          {sections.map((s) => (
+        {/* Mobile step nav */}
+        <div className="lg:hidden flex overflow-x-auto" style={{ borderBottom: '1px solid var(--border)' }}>
+          {['personal','experience','education','skills','projects','certifications'].map((id) => (
             <button
-              key={s.id}
-              onClick={() => setActiveSection(s.id)}
-              className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium shrink-0 border-b-2 transition-colors"
+              key={id}
+              onClick={() => setActiveStep(id)}
+              className="px-4 py-3 text-sm font-medium shrink-0 border-b-2 transition-colors capitalize"
               style={{
-                borderBottomColor: activeSection === s.id ? 'var(--accent)' : 'transparent',
-                color: activeSection === s.id ? 'var(--accent)' : 'var(--text-muted)',
+                borderBottomColor: activeStep === id ? 'var(--accent)' : 'transparent',
+                color: activeStep === id ? 'var(--accent)' : 'var(--text-muted)',
               }}
             >
-              <span>{s.icon}</span>
-              <span>{s.label}</span>
+              {id}
             </button>
           ))}
         </div>
 
-        {/* Form */}
+        {/* Form area */}
         <div className="flex-1 overflow-y-auto p-5">
-          {activeSection === 'personal' && <PersonalInfoForm />}
-          {activeSection === 'experience' && <ExperienceForm />}
-          {activeSection === 'education' && <EducationForm />}
-          {activeSection === 'skills' && <SkillsForm />}
+          {activeStep === 'personal' && <PersonalInfoForm />}
+          {activeStep === 'experience' && <ExperienceForm />}
+          {activeStep === 'education' && <EducationForm />}
+          {activeStep === 'skills' && <SkillsForm />}
+          {activeStep === 'projects' && (
+            <div className="text-center py-12" style={{ color: 'var(--text-muted)' }}>
+              Projects form coming next
+            </div>
+          )}
+          {activeStep === 'certifications' && (
+            <div className="text-center py-12" style={{ color: 'var(--text-muted)' }}>
+              Certifications form coming next
+            </div>
+          )}
         </div>
+
+        {/* Next/Prev navigation */}
+        <StepNav activeStep={activeStep} onStepChange={setActiveStep} />
       </div>
 
-      {/* Right Panel */}
+      {/* Right Panel — Preview */}
       <div
         className={`flex-1 overflow-y-auto ${showPreview ? 'flex flex-col' : 'hidden lg:block'}`}
         style={{ background: 'var(--bg-tertiary)' }}
@@ -150,6 +136,41 @@ function BuilderInner() {
           <ResumePreview />
         </div>
       </div>
+    </div>
+  )
+}
+
+const stepOrder = ['personal', 'experience', 'education', 'skills', 'projects', 'certifications']
+
+function StepNav({ activeStep, onStepChange }: { activeStep: string; onStepChange: (s: string) => void }) {
+  const index = stepOrder.indexOf(activeStep)
+  const prev = stepOrder[index - 1]
+  const next = stepOrder[index + 1]
+
+  return (
+    <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
+      <button
+        onClick={() => prev && onStepChange(prev)}
+        disabled={!prev}
+        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-30"
+        style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+      >
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back
+      </button>
+      <button
+        onClick={() => next && onStepChange(next)}
+        disabled={!next}
+        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-30"
+        style={{ background: 'var(--accent)' }}
+      >
+        Next
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
     </div>
   )
 }
