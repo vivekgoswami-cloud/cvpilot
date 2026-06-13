@@ -72,6 +72,35 @@ function BuilderInner() {
             <option value="large">Large</option>
           </select>
 
+          {/* Color variants */}
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+            {[
+              { id: 'template', hex: null, label: 'Default' },
+              { id: 'blue', hex: '#2563eb' },
+              { id: 'green', hex: '#16a34a' },
+              { id: 'purple', hex: '#9333ea' },
+              { id: 'red', hex: '#dc2626' },
+              { id: 'orange', hex: '#ea580c' },
+              { id: 'teal', hex: '#0d9488' },
+              { id: 'gray', hex: '#4b5563' },
+              { id: 'rose', hex: '#e11d48' },
+            ].map((c) => (
+              <button
+                key={c.id}
+                onClick={() => updateSettings({ colorTheme: c.id as any })}
+                title={c.label || c.id}
+                className="w-5 h-5 rounded-full transition-all hover:scale-110 shrink-0"
+                style={{
+                  background: c.hex || `linear-gradient(135deg, #2563eb 25%, #16a34a 25% 50%, #9333ea 50% 75%, #dc2626 75%)`,
+                  transform: settings.colorTheme === c.id ? 'scale(1.25)' : undefined,
+                  outline: settings.colorTheme === c.id ? '2px solid var(--accent)' : 'none',
+                  outlineOffset: '2px',
+                  border: c.id === 'template' ? '1px solid var(--border)' : 'none',
+                }}
+              />
+            ))}
+          </div>
+
           <div className="ml-auto flex items-center gap-2">
             <DownloadButton />
             <button
@@ -84,6 +113,7 @@ function BuilderInner() {
           </div>
         </div>
 
+        
         {/* Mobile step nav */}
         <div className="lg:hidden flex overflow-x-auto" style={{ borderBottom: '1px solid var(--border)' }}>
           {['personal', 'experience', 'education', 'skills', 'projects', 'certifications'].map((id) => (
