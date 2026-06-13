@@ -27,7 +27,7 @@ export default function SingleLayout({ data, settings, color }: TemplateProps & 
           </Section>
         )}
 
-        {experience.length > 0 && (
+       {experience.filter(e => e.jobTitle || e.company).length > 0 && (
           <Section title="Experience" color={color} fontSize={fs}>
             {experience.map((exp) => (
               <div key={exp.id} style={{ marginBottom: 14 }}>
@@ -46,7 +46,7 @@ export default function SingleLayout({ data, settings, color }: TemplateProps & 
           </Section>
         )}
 
-        {education.length > 0 && (
+        {education.filter(e => e.degree || e.school).length > 0 && (
           <Section title="Education" color={color} fontSize={fs}>
             {education.map((edu) => (
               <div key={edu.id} style={{ marginBottom: 12 }}>

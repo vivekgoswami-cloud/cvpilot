@@ -11,6 +11,9 @@ import EducationForm from '@/components/editor/EducationForm'
 import SkillsForm from '@/components/editor/SkillsForm'
 import ResumePreview from '@/components/preview/ResumePreview'
 import DownloadButton from '@/components/preview/DownloadButton'
+import ProjectsForm from '@/components/editor/ProjectsForm'
+import CertificationsForm from '@/components/editor/CertificationsForm'
+
 
 const colorMap: Record<string, string> = {
   classic: 'blue', modern: 'purple', minimal: 'gray',
@@ -83,7 +86,7 @@ function BuilderInner() {
 
         {/* Mobile step nav */}
         <div className="lg:hidden flex overflow-x-auto" style={{ borderBottom: '1px solid var(--border)' }}>
-          {['personal','experience','education','skills','projects','certifications'].map((id) => (
+          {['personal', 'experience', 'education', 'skills', 'projects', 'certifications'].map((id) => (
             <button
               key={id}
               onClick={() => setActiveStep(id)}
@@ -156,7 +159,7 @@ function StepNav({ activeStep, onStepChange }: { activeStep: string; onStepChang
         style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
       >
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
         Back
       </button>
@@ -168,7 +171,7 @@ function StepNav({ activeStep, onStepChange }: { activeStep: string; onStepChang
       >
         Next
         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
     </div>
